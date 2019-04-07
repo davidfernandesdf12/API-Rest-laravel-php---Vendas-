@@ -18,8 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::namespace('API')->name('api.')->group(function(){
+    
+    #Region API Product
     Route::prefix('products')->group(function(){
-
         Route::get('/', 'ProductController@index')->name('index_produts');
         Route::get('/{id}', 'ProductController@show')->name('single_products');
 
@@ -27,6 +28,32 @@ Route::namespace('API')->name('api.')->group(function(){
         Route::put('/{id}' , 'ProductController@update')->name('update_products');
         Route::delete('/{id}' , 'ProductController@delete')->name('delte_products');
 
+    });
+    #endRegion API Product 
+
+    #Region API Custumer
+    Route::prefix('custumers')->group(function(){
+        Route::get('/', 'CustumerController@index')->name('index_custumers');
+        Route::get('/{id}', 'CustumerController@show')->name('single_custumers');
+
+        Route::post('/', 'CustumerController@store')->name('store_custumers');
+        Route::put('/{id}', 'CustumerController@update')->name('update_custumers');
+        Route::delete('/{id}', 'CustumerController@delete')->name('detele_custumers');
+    });
+    #endRegion API Custumer
+
+    #Region API Seller
+    Route::prefix('sellers')->group(function(){
+        Route::get('/', 'SellerController@index')->name('index_sellers');
+        Route::get('/{id}', 'SellerController@show')->name('single_sellers');
+
+        Route::post('/', 'SellerController@store')->name('store_sellers');
+        Route::put('/{id}', 'SellerController@update')->name('update_sellers');
+        Route::delete('/{id}', 'SellerController@delete')->name('delete_sellers');
+    #endRegion API Seller
+
 
     });
+
+
 });

@@ -4,33 +4,33 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Product;
+use App\Seller;
 use PHPUnit\Framework\Exception;
 use App\API\ApiError;
 
-class ProductController extends Controller
+class SellerController extends Controller
 {
-    private $product;
+    private $seller;
 
-    public function __construct(Product $product)
+    public function __construct(Seller $seller)
     {
-        $this->product = $product;
+        $this->seller = $seller;
     }
-
+    
     public function index()
     {
-        $data = ['data' => $this->product->paginate(10)];
+        $data = ['data' => $this->seller->paginate(10)];
         return response()->json($data);
     }
 
     public function show($id)
     {
-        $product = $this->product->find($id);
+        $seller = $this->seller->find($id);
 
-        if(!$product)
-            return response()->json(ApiError::erroMessage('Produto não encontrado!', 4040), 404);
+        if(!$seller)
+            return response()->json(ApiError::erroMessage('Vendedor não encontrado!', 4040), 404);
 
-        $data = ['data' => $product];
+        $data = ['data' => $seller];
         return response()->json($data);
     }
 
@@ -38,9 +38,9 @@ class ProductController extends Controller
     {
         try
         {
-            $productData = $request->all();
-            $this->product->create($productData);
-            $return = ['data' => ['msg' => 'Produto criado com sucesso!']];
+            $sellerData = $request->all();
+            $this->seller->create($sellerData);
+            $return = ['data' => ['msg' => 'vendedor criado com sucesso!']];
             return response()->json($return, 201);
 
         }
@@ -58,13 +58,13 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        try
+         try
         {
-            $productData = $request->all();
-            $product = $this->product->find($id);
-            $product->update($productData);
+            $sellerData = $request->all();
+            $seller = $this->seller->find($id);
+            $seller->update($sellerData);
 
-            $return = ['data' => ['msg' => 'Produto atualizado com sucesso!']];
+            $return = ['data' => ['msg' => 'vendedor atualizado com sucesso!']];
             return response()->json($return, 201);
 
         }
@@ -72,20 +72,19 @@ class ProductController extends Controller
         {
             if(config('app.debug'))
             {
-                return response()->json(ApiError::erroMessage($ex->getMessage(), 1011, 500));
+                return response()->json(ApiError::erroMessage($ex->getMessage(), 1010, 500));
             }
 
-            return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação de atualuzar', 1011, 500));
+            return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação de salvar', 1010, 500));
         }
-       
     }
 
-    public function delete(Product $id)
+    public function delete(Seller $id)
     {
         try
         {
             $id->delete();
-            return response()->json(['data' => ['msg' => 'Produto ' . $id->description . ' removido com sucesso!']], 200);
+            return response()->json(['data' => ['msg' => 'Cliente ' . $id->name . ' removido com sucesso!']], 200);
         }
         catch(\Exception $ex)
         {

@@ -4,33 +4,33 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Product;
+use App\Custumer;
 use PHPUnit\Framework\Exception;
 use App\API\ApiError;
 
-class ProductController extends Controller
+class CustumerController extends Controller
 {
-    private $product;
+    private $custumer;
 
-    public function __construct(Product $product)
+    public function __construct(Custumer $custumer)
     {
-        $this->product = $product;
+        $this->custumer = $custumer;
     }
-
+    
     public function index()
     {
-        $data = ['data' => $this->product->paginate(10)];
+        $data = ['data' => $this->custumer->paginate(10)];
         return response()->json($data);
     }
 
     public function show($id)
     {
-        $product = $this->product->find($id);
+        $custumer = $this->custumer->find($id);
 
-        if(!$product)
-            return response()->json(ApiError::erroMessage('Produto não encontrado!', 4040), 404);
+        if(!$custumer)
+            return response()->json(ApiError::erroMessage('Cliente não encontrado!', 4040), 404);
 
-        $data = ['data' => $product];
+        $data = ['data' => $custumer];
         return response()->json($data);
     }
 
@@ -38,9 +38,9 @@ class ProductController extends Controller
     {
         try
         {
-            $productData = $request->all();
-            $this->product->create($productData);
-            $return = ['data' => ['msg' => 'Produto criado com sucesso!']];
+            $custumerData = $request->all();
+            $this->custumer->create($custumerData);
+            $return = ['data' => ['msg' => 'Cliente criado com sucesso!']];
             return response()->json($return, 201);
 
         }
@@ -58,13 +58,13 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        try
+         try
         {
-            $productData = $request->all();
-            $product = $this->product->find($id);
-            $product->update($productData);
+            $custumerData = $request->all();
+            $custumer = $this->custumer->find($id);
+            $custumer->update($custumerData);
 
-            $return = ['data' => ['msg' => 'Produto atualizado com sucesso!']];
+            $return = ['data' => ['msg' => 'Cliente atualizado com sucesso!']];
             return response()->json($return, 201);
 
         }
@@ -72,20 +72,19 @@ class ProductController extends Controller
         {
             if(config('app.debug'))
             {
-                return response()->json(ApiError::erroMessage($ex->getMessage(), 1011, 500));
+                return response()->json(ApiError::erroMessage($ex->getMessage(), 1010, 500));
             }
 
-            return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação de atualuzar', 1011, 500));
+            return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação de salvar', 1010, 500));
         }
-       
     }
 
-    public function delete(Product $id)
+    public function delete(Custumer $id)
     {
         try
         {
             $id->delete();
-            return response()->json(['data' => ['msg' => 'Produto ' . $id->description . ' removido com sucesso!']], 200);
+            return response()->json(['data' => ['msg' => 'Cliente ' . $id->name . ' removido com sucesso!']], 200);
         }
         catch(\Exception $ex)
         {
