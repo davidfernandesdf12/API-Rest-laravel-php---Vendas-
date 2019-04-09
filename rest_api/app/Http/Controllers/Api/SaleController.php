@@ -22,7 +22,11 @@ class SaleController extends Controller
 
     public function index()
     {
-        $data = ['data' => $this->sale->paginate(10)];
+        $sales = $this->sale->all();
+        $products = $this->saleHasProduct->all();
+        $data = ['data' => $this->sale->all()];
+        
+        
         return response()->json($data);
     }
 
@@ -52,7 +56,7 @@ class SaleController extends Controller
             foreach($saleHasProductsData as $produto)
             {
                 for($i = 0; $i<count($produto); $i++){
-                    $this->saleHasProduct->create(['id_product' => $produto[$i], 'id_sale' => $sale->id]);
+                    $this->saleHasProduct->create(['id_sale' => $sale->id, 'id_product' => $produto[$i]]);
                 }
             }
 
@@ -75,8 +79,15 @@ class SaleController extends Controller
     {
         try
         {
-            $sale = $this->sale->find($id);
-            $sale->update($saleData);
+            //update da venda
+            // $saleData = $request->all();;
+            // $sale = $this->sale->find($id);
+            // $sale->update($saleData);
+
+            //update dos produtos relacionados a venda
+            // $saleHasProducts = $request->all();
+            // $products = $this->saleHasProduct->contains()
+
 
             $return = ['data' => ['msg' => 'Venda atualizado com sucesso!']];
             return response()->json($return, 201);

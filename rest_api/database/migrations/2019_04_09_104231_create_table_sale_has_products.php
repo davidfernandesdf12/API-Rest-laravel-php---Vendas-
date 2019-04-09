@@ -15,11 +15,16 @@ class CreateTableSaleHasProducts extends Migration
     {
         Schema::create('sale_has_products', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('id_sale')->unsigned();
-            $table->foreign('id_sale')->references('id')->on('sales');
-            $table->integer('id_product')->unsigned();
-            $table->foreign('id_product')->references('id')->on('products');
+            $table->unsignedBigInteger('id_sale');
+            $table->unsignedBigInteger('id_product');
             $table->timestamps();
+        });
+
+        Schema::table('sale_has_products', function($table)
+        {
+            $table->foreign('id_sale')->references('id')->on('sales')->onDelete('cascade');
+            $table->foreign('id_product')->references('id')->on('products')->onDelete('cascade');
+
         });
     }
 

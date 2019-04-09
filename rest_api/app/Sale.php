@@ -3,9 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\SaleHasProducts;
 
 class Sale extends Model
 {
-    protected $fillable = ['id_custumer', 'id_seller'];
+    protected $fillable = ['id_custumer', 'id_seller' , 'products'];
 
+    public function Products($products){
+        return  $products;
+    }
 }

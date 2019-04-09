@@ -18,6 +18,7 @@ class CreateTableSellers extends Migration
             $table->text('name');
             $table->timestamps();
         });
+        
     }
 
     /**
