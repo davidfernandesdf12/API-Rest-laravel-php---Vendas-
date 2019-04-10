@@ -7,7 +7,7 @@ use App\SaleHasProducts;
 
 class Sale extends Model
 {
-    protected $fillable = ['id_custumer', 'id_seller' , 'products'];
+    protected $fillable = ['id_custumer', 'id_seller'];
 
     public function Products($products){
         return  $products;

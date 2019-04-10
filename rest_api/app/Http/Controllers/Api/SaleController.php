@@ -23,22 +23,47 @@ class SaleController extends Controller
     public function index()
     {
         $sales = $this->sale->all();
-        $products = $this->saleHasProduct->all();
-        $data = ['data' => $this->sale->all()];
         
+        //collection para retornar json estruturado com produtos
+        $data = collect([]);
+        $dataProducts = collect([]);
+
+        for($i=0; $i < count($sales); $i++){    
+            $products = $this->saleHasProduct->all('id_sale','id_product')->where('id_sale', $sales[$i]->id);
+
+        for($p = 0; $p < count($products); $p++)
+        {
+            $dataProducts->add($products[$p]->id_product);
+        }
         
-        return response()->json($data);
+        $data->add(['id'=>$sales[$i]->id, 'id_custumer' => $sales[$i]->id_custumer,'id_seller'=>$sales[$i]->id_seller, 'data' => $sales[$i]->created_at->format('d/m/Y h:i:s'), 'products' => $dataProducts]);
+        $dataProducts = collect([]);
+        }
+
+        return response()->json(['data' => $data]);          
     }
 
     public function show($id)
     {
         $sale = $this->sale->find($id);
 
+        $products = $this->saleHasProduct->all('id_sale','id_product')->where('id_sale', $sale->id);
+
+        //collection para retornar json estruturado com produtos
+        $data = collect([]);
+        $dataProducts = collect([]);
+
+        for($p = 0; $p < count($products); $p++)
+        {
+            $dataProducts->add($products[$p]->id_product);
+        }
+        
         if(!$sale)
             return response()->json(ApiError::erroMessage('Venda não encontrado!', 4040), 404);
 
-        $data = ['data' => $sale];
-        return response()->json($data);
+        $data->add(['id'=>$sale->id, 'id_custumer' => $sale->id_custumer,'id_seller'=>$sale->id_seller, 'data' => $sale->created_at->format('d/m/Y h:i:s'), 'products' => $dataProducts]);
+
+        return response()->json(['data' => $data]);          
     }
 
     public function store(Request $request)
@@ -80,17 +105,24 @@ class SaleController extends Controller
         try
         {
             //update da venda
-            // $saleData = $request->all();;
-            // $sale = $this->sale->find($id);
+            $saleData = $request->all('id_product');;
+            $sale = $this->sale->find($id);
             // $sale->update($saleData);
 
             //update dos produtos relacionados a venda
-            // $saleHasProducts = $request->all();
+            // $saleHasProducts = $request->all()->where('id_sale', $sale->id_sale);
             // $products = $this->saleHasProduct->contains()
+            $listProducts = collect([]);
 
+            $data = $this->saleHasProduct->all('id_product', 'id_sale')->where('id_sale', $id);
 
-            $return = ['data' => ['msg' => 'Venda atualizado com sucesso!']];
-            return response()->json($return, 201);
+            for($i = 0; $i<count($data); $i++){
+                $listProducts->add($data[$i]->id_product);
+            }
+
+            return response()->json(['products' => $saleData]);
+            // $return = ['data' => ['msg' => 'Venda atualizado com sucesso!']];
+            // return response()->json($return, 201);
 
         }
         catch(\Exception $ex)

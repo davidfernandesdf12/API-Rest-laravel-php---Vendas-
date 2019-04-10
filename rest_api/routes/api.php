@@ -59,8 +59,8 @@ Route::namespace('API')->name('api.')->group(function(){
         Route::get('/{id}', 'SaleController@show')->name('show_sales');
 
         Route::post('/', 'SaleController@store')->name('store_sales');
-        Route::get('/{id}', 'SaleController@update')->name('update_sales');
-        Route::get('/{id}', 'SaleController@delete')->name('delete_sales');
+        Route::put('/{id}', 'SaleController@update')->name('update_sales');
+        Route::delete('/{id}', 'SaleController@delete')->name('delete_sales');
     });
     #endRegion APi Sale
 
