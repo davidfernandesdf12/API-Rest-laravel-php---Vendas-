@@ -105,24 +105,30 @@ class SaleController extends Controller
         try
         {
             //update da venda
-            $saleData = $request->all('id_product');;
+            $saleProductsData = $request->all('id_product');;
+            $saleData = $request->all('id_custumer', 'id_seller');;
             $sale = $this->sale->find($id);
-            // $sale->update($saleData);
+            $sale->update($saleData);
 
-            //update dos produtos relacionados a venda
-            // $saleHasProducts = $request->all()->where('id_sale', $sale->id_sale);
-            // $products = $this->saleHasProduct->contains()
-            $listProducts = collect([]);
+            //removendo produtos atuais
+            $data = $this->saleHasProduct->all()->where('id_sale', $id);
 
-            $data = $this->saleHasProduct->all('id_product', 'id_sale')->where('id_sale', $id);
-
-            for($i = 0; $i<count($data); $i++){
-                $listProducts->add($data[$i]->id_product);
+            if($data != null){
+                for ($i=0; $i < count($data) ; $i++) { 
+                    $data[$i]->delete();
+                }
             }
 
-            return response()->json(['products' => $saleData]);
-            // $return = ['data' => ['msg' => 'Venda atualizado com sucesso!']];
-            // return response()->json($return, 201);
+            //adicionando os produtos selecionados
+            foreach($saleProductsData as $produto)
+            {
+                for($i = 0; $i<count($produto); $i++){
+                    $this->saleHasProduct->create(['id_sale' => $sale->id, 'id_product' => $produto[$i]]);
+                }
+            }
+
+            $return = ['data' => ['msg' => 'Venda atualizado com sucesso!']];
+            return response()->json($return, 201);
 
         }
         catch(\Exception $ex)
@@ -142,6 +148,15 @@ class SaleController extends Controller
         try
         {
             $id->delete();
+            
+            //removendo produtos da venda relacionada
+            $data = $this->saleHasProduct->all()->where('id_sale', $id->id);
+
+            if($data != null){
+                for ($i=0; $i < count($data) ; $i++) { 
+                    $data[$i]->delete();
+                }
+            }
             return response()->json(['data' => ['msg' => 'Venda ' . $id->description . ' removido com sucesso!']], 200);
         }
         catch(\Exception $ex)
