@@ -40,7 +40,7 @@ class ProductController extends Controller
         {
             $productData = $request->all();
             $this->product->create($productData);
-            $return = ['data' => ['msg' => 'Produto criado com sucesso!']];
+            $return = ['data' => ['msg' => $productData]];
             return response()->json($return, 201);
 
         }

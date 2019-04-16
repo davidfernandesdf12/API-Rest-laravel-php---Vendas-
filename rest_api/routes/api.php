@@ -56,12 +56,21 @@ Route::namespace('API')->name('api.')->group(function(){
     #Region API Sale
     Route::prefix('sales')->group(function(){
         Route::get('/', 'SaleController@index')->name('index_sales');
-        Route::get('/{id}', 'SaleController@show')->name('show_sales');
+        Route::get('/sales_sellers','SaleController@sale_sellers')->name('sales_sellers');  
+        
+        Route::prefix('sales_sellers')->group(function(){
+            Route::get('/', 'SaleController@sale_sellers')->name('sale_sellers');
+    
+        });
+
 
         Route::post('/', 'SaleController@store')->name('store_sales');
         Route::put('/{id}', 'SaleController@update')->name('update_sales');
         Route::delete('/{id}', 'SaleController@delete')->name('delete_sales');
+
     });
+
+    
     #endRegion APi Sale
 
 });
