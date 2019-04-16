@@ -139,26 +139,19 @@ class SaleController extends Controller
         try
         {
             //update da venda
-            $saleData = $request->all('id_custumer', 'id_seller');
-            
+            $saleData = $request->only('id_custumer', 'id_seller');
+            $saleProdutos = $request->only('id_product');
             
             $sale = $this->sale->find($id);
 
             if(!$sale)
             {
-                return response()->json(ApiError::erroMessage('Produto não encontrado!', 4040), 404);
+                return response()->json(ApiError::erroMessage('Venda não encontrado!', 4040), 404);
             }
             else
             {
-                if(!$sale)
-                return response()->json(ApiError::erroMessage('Venda não encontrado!', 4040), 404);
-        
-
-                if($saleData)
+                if($saleData != null)
                     $sale->update($saleData);
-
-
-                $saleProdutos = $request->all('id_product');
 
                 if($saleProdutos)
                 {
@@ -224,16 +217,23 @@ class SaleController extends Controller
     public function sale_sellers(){
         try
         {
-            $sellers = $this->seller->all();
-            $data = collect([]);
+        $sellers =  Sale::
+        select('sellers.id as id_vendedor', 'sellers.name as nome', 'sales.created_at')
+        ->join('sellers', 'sales.id_seller', '=', 'sellers.id')
+        ->whereRaw('MONTH(sales.created_at) = ?', date('m'))
+        ->groupBy('id_vendedor')
+        ->get();
+        
 
+        $data = collect();
           for($i = 0; $i<count($sellers); $i++)
           {
-            $data->add(['vendedor'=>$sellers[$i]->name, 'Quantidade de Vendas' => $this->sale->where('id_seller', $sellers[$i]->id)->count()]);
+            $data->add(["vendedor" => $sellers[$i]->only('id_vendedor', 'nome'), "quantidade vendas" => $this->sale->where('id_seller', $sellers[$i]->id_vendedor)->count()]);
+            
           }
 
-          return $data;
-            
+          return $data;     
+        
         }
         catch(\Exception $ex)
         {
