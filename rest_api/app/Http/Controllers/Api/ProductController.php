@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $data = ['data' => $this->product->paginate(10)];
+        $data = ['data' => $this->product->paginate(5)];
         return response()->json($data);
     }
 
@@ -40,7 +40,7 @@ class ProductController extends Controller
         {
             $productData = $request->all();
             $this->product->create($productData);
-            $return = ['data' => ['msg' => $productData]];
+            $return = ['data' => ['msg' => 'Produto inserido com sucesso!']];
             return response()->json($return, 201);
 
         }
