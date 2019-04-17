@@ -214,35 +214,67 @@ class SaleController extends Controller
         }
     }
 
+    //Traz a quantidade de vendas de cada vendedor durante o mês atual
     public function sale_sellers(){
         try
         {
-        $sellers =  Sale::
-        select('sellers.id as id_vendedor', 'sellers.name as nome', 'sales.created_at')
-        ->join('sellers', 'sales.id_seller', '=', 'sellers.id')
-        ->whereRaw('MONTH(sales.created_at) = ?', date('m'))
-        ->groupBy('id_vendedor')
-        ->get();
+            $sellers =  Sale::
+            select('sellers.id as id_vendedor', 'sellers.name as nome', 'sales.created_at')
+            ->join('sellers', 'sales.id_seller', '=', 'sellers.id')
+            ->whereRaw('MONTH(sales.created_at) = ?', date('m'))
+            ->groupBy('id_vendedor')
+            ->get();
         
 
-        $data = collect();
-          for($i = 0; $i<count($sellers); $i++)
-          {
-            $data->add(["vendedor" => $sellers[$i]->only('id_vendedor', 'nome'), "quantidade vendas" => $this->sale->where('id_seller', $sellers[$i]->id_vendedor)->count()]);
-            
-          }
-
-          return $data;     
-        
-        }
-        catch(\Exception $ex)
-        {
-            if(config('app.debug'))
+            $data = collect();
+            for($i = 0; $i<count($sellers); $i++)
             {
-                return response()->json(ApiError::erroMessage($ex->getMessage(), 1012, 500));
+                $data->add(["vendedor" => $sellers[$i]->only('id_vendedor', 'nome'), "quantidade vendas" => $this->sale->where('id_seller', $sellers[$i]->id_vendedor)->count()]);
+                
             }
 
-            return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação', 1012, 500));
-        }
+            return $data;     
+            
+            }
+            catch(\Exception $ex)
+            {
+                if(config('app.debug'))
+                {
+                    return response()->json(ApiError::erroMessage($ex->getMessage(), 1012, 500));
+                }
+
+                return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação', 1012, 500));
+            }
+    }
+
+    //Traz os 3 clientes que combraram filtrado por produto
+    public function custumers_product($idproduto){
+        try
+        {
+            $custumers = SaleHasProducts::
+            select('sale_has_products.id_sale as id_sale,','sale_has_products.id_product', 'sa.id_custumer as id_custumer', 'c.name as nome')
+            ->join('Sales as sa', 'sa.id' ,'=', 'sale_has_products.id_sale')
+            ->join('Custumers as c', 'c.id','=','id_custumer')
+            ->where('sale_has_products.id_product', $idproduto)->groupBy('id_custumer')->take(3)->get();
+
+            $data = collect();
+            for($i = 0; $i<count($custumers); $i++)
+            {
+                $data->add(["cliente" => $custumers[$i]->only('id_custumer', 'nome'), "quantidade produtos" => $this->sale->where('id_custumer', $custumers[$i]->id_custumer)->count()]);
+                
+            }
+
+            return $data;     
+            
+            }
+            catch(\Exception $ex)
+            {
+                if(config('app.debug'))
+                {
+                    return response()->json(ApiError::erroMessage($ex->getMessage(), 1012, 500));
+                }
+
+                return response()->json(ApiError::ErroMessage('Houve um erro ao realizar operação', 1012, 500));
+            }
     }
 }
